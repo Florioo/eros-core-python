@@ -1,6 +1,6 @@
 import multiprocessing as mp
 from multiprocessing.connection import Connection
-from packeteiser import COBS_PACKETIZER
+from packeteiser import COBS_Processor
 
 import logging 
 import time
@@ -9,6 +9,7 @@ import bitstruct
 from dataclasses import dataclass
 from enum import Enum
 from crc8 import crc8_gen
+import threading
 
 class RSPType(Enum):
     DATA_ACK   = 0  # Data packet with acknowledgement
@@ -47,7 +48,7 @@ class RSPResponse:
 
 crc8 = crc8_gen()
 
-class RSP():
+class PacketEncapsulation():
     def __init__(self, name:str, port: Connection, log_level=logging.DEBUG):
         """Reliable Serial Protocol
 
@@ -60,11 +61,16 @@ class RSP():
         self.log = logging.getLogger(name)
         self.log.setLevel(log_level)
         
-        self.port:COBS_PACKETIZER = port
+        self.port:COBS_Processor = port
         self.port.received_packet_callback = self.process_received_data
-
+        self.new_packet_event = threading.Event()
+        
         self.seq = 0
         self.responses = {}
+        self.packet_handlers = []
+    
+    def add_packet_handler(self, handler):
+        self.packet_handlers.append(handler)
         
     def transmit_frame(self, frame : RSPFrame):
         """ Transmit a frame
@@ -86,7 +92,8 @@ class RSP():
         start_time = time.time()
         
         while True:
-            
+            self.new_packet_event.wait(0.2)
+            self.new_packet_event.clear()
             # Check if we have received a response with the specified sequence number
             if seq in self.responses:
                 response = self.responses[seq]
@@ -96,7 +103,6 @@ class RSP():
             if time.time() - start_time > timeout:
                 return None
             
-            time.sleep(0.01)
             
     def send_packet(self, data:bytes, request_ack: bool) -> RSPResponse:
         """Send a packet
@@ -153,10 +159,11 @@ class RSP():
         self.process_received_frame(frame)
                 
     def process_received_frame(self, frame:RSPFrame):
-        
+        # Packet received
         if frame.header.type == RSPType.DATA_ACK or frame.header.type == RSPType.DATA_NOACK:
             
             ret = self.handle_data(frame.data)
+            
             if frame.header.type != RSPType.DATA_ACK:
                 return
             
@@ -164,15 +171,21 @@ class RSP():
             
             self.transmit_frame(RSPFrame(RSPHeader(frame.header.seq, type), ret.data))
             
+        # Acknowledgements
         elif frame.header.type == RSPType.RESP_ACK or frame.header.type == RSPType.RESP_NACK:
             self.responses[frame.header.seq] = frame
-
+            self.new_packet_event.set()
         
     
     def handle_data(self, data: bytes) -> RSPResponse:
+        
         self.log.info(f"Received: {data}")
         
-        if random.randint(0,10) < 5:
-            return RSPResponse(False, "A Custom error ".encode())
-        
-        return RSPResponse(True, "OK".encode())
+        for handler in self.packet_handlers:
+            ret = handler(data)
+            
+            if ret is not None:
+                return ret
+            
+        self.log.error("No handler found")
+        return RSPResponse(False, b"No handler found") 

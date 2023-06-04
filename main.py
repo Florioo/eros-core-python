@@ -1,32 +1,38 @@
 import multiprocessing as mp
-from packeteiser import COBS_PACKETIZER
+from packeteiser import COBS_Processor
 import logging 
 import time
 import colorlog
-
-from RSP import RSP
+from SerialSimulator import SerialSimulator
+from RSP import PacketEncapsulation, RSPResponse
 import log_color
+import random
 
 # Create a logger
 logger = log_color.setup_logger()
 
 # Create the virtual pipe
-master_pipe, child_pipe = mp.Pipe()
+loge =  logging.ERROR
         
-# init logging
-master = COBS_PACKETIZER("master",master_pipe, logging.ERROR)
-child = COBS_PACKETIZER("child",  child_pipe, logging.ERROR)
+def child_data_handler(data: bytes):
+    logger.info(f"Master received: {data}")
 
-master_rsp = RSP("master_RSP", master, logging.ERROR)
-child_rsp = RSP("child_RSP", child, logging.ERROR)
+    if random.randint(0,10) < 5:
+        return RSPResponse(False, "A Custom error ".encode())
+    
+    return RSPResponse(True, "OK".encode())
+    
+master_rsp = PacketEncapsulation("master_RSP", COBS_Processor("master",SerialSimulator("COM1", 0), loge), loge)
+child_rsp = PacketEncapsulation("child_RSP", COBS_Processor("child",  SerialSimulator("COM1", 1), loge), loge)
 
+child_rsp.add_packet_handler(child_data_handler)
 
 log = logging.getLogger("main")
 
-for i in range(10):
+for i in range(100):
 
+    ret = master_rsp.send_packet(f"DATATAT {i}".encode(), False)
     ret = master_rsp.send_packet(f"Hello World {i}".encode(), True)
-    ret = child_rsp.send_packet(f"DATATAT {i}".encode(), True)
     
     if not ret.ok:
         log.error(f"Error: {ret.data}")
@@ -36,3 +42,13 @@ for i in range(10):
     
 
 time.sleep(0.2)
+
+
+
+
+# # Ideal interface prototype
+# serial_port = SerialSimulator("COM1", 0)
+# COBS_encoder = COBS_Processor("COBS_encoder", serial_port)
+# rsp = PacketEncapsulation("master_RSP", COBS_encoder)
+
+# rsp.add_packet_handler(child_data_handler)

@@ -1,10 +1,10 @@
 import multiprocessing as mp
-from packeteiser import COBS_PACKETIZER
+from packeteiser import COBS_Processor
 import logging 
 import time
 import colorlog
 
-from RSP import RSP
+from RSP import PacketEncapsulation
 
 def setup_logger():
     # Create a logger object.
