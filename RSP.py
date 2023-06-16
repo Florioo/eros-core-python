@@ -1,6 +1,6 @@
 import multiprocessing as mp
 from multiprocessing.connection import Connection
-from packeteiser import COBS_Processor
+from packeteiser import framing
 
 import logging 
 import time
@@ -61,7 +61,7 @@ class PacketEncapsulation():
         self.log = logging.getLogger(name)
         self.log.setLevel(log_level)
         
-        self.port:COBS_Processor = port
+        self.port:framing = port
         self.port.received_packet_callback = self.process_received_data
         self.new_packet_event = threading.Event()
         

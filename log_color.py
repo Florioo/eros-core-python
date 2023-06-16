@@ -1,5 +1,5 @@
 import multiprocessing as mp
-from packeteiser import COBS_Processor
+from packeteiser import framing
 import logging 
 import time
 import colorlog

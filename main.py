@@ -1,9 +1,9 @@
 import multiprocessing as mp
-from packeteiser import COBS_Processor
+from packeteiser import framing
 import logging 
 import time
 import colorlog
-from SerialSimulator import SerialSimulator
+from stream_simulator import SerialSimulator
 from RSP import PacketEncapsulation, RSPResponse
 import log_color
 import random
@@ -22,8 +22,8 @@ def child_data_handler(data: bytes):
     
     return RSPResponse(True, "OK".encode())
     
-master_rsp = PacketEncapsulation("master_RSP", COBS_Processor("master",SerialSimulator("COM1", 0), loge), loge)
-child_rsp = PacketEncapsulation("child_RSP", COBS_Processor("child",  SerialSimulator("COM1", 1), loge), loge)
+master_rsp = PacketEncapsulation("master_RSP", framing("master",SerialSimulator("COM1", 0), loge), loge)
+child_rsp = PacketEncapsulation("child_RSP", framing("child",  SerialSimulator("COM1", 1), loge), loge)
 
 child_rsp.add_packet_handler(child_data_handler)
 
@@ -47,8 +47,12 @@ time.sleep(0.2)
 
 
 # # Ideal interface prototype
+
+
 # serial_port = SerialSimulator("COM1", 0)
-# COBS_encoder = COBS_Processor("COBS_encoder", serial_port)
+# Eros(serial_port)
+
+# COBS_encoder = framing("COBS_encoder", serial_port)
 # rsp = PacketEncapsulation("master_RSP", COBS_encoder)
 
 # rsp.add_packet_handler(child_data_handler)

@@ -4,7 +4,7 @@ import threading
 import logging 
 import time
 
-class COBS_Processor():
+class framing():
     def __init__(self, name:str, io, log_level=logging.DEBUG):
         """Packetizer for COBS encoded data
 
@@ -13,6 +13,7 @@ class COBS_Processor():
             pipe_handle (Connection): Pipe handle to use for communication
             log_level (_type_, optional): Log level. Defaults to logging.DEBUG.
         """
+        
         self.log = logging.getLogger(name)
         self.log.setLevel(log_level)
 
