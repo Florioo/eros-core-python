@@ -69,5 +69,22 @@ class ErosInteractiveCLI():
                 
   
     
-eros_serial = ErosInteractiveCLI(ErosStream(ErosSerial()),6,7)
-eros_serial.run()
+# eros_serial = ErosInteractiveCLI(ErosStream(ErosSerial()),6,7)
+# eros_serial.run()
+
+
+from eros_drv_udp import ErosUDP
+from eros import ErosStream
+from eros_drv_tcp import ErosTCP
+import time
+eros_serial = ErosStream(ErosTCP("10.250.100.108", 5555))
+print("Connected")
+eros_serial.transmit(1, b"Hello World")
+
+cli = ErosInteractiveCLI(eros_serial,6,7)
+cli.run()
+
+# eros_serial.attach_channel_callback(1, lambda data: print("Got data: ", data))
+
+# for i in range(0, 10):
+#     eros_serial.transmit(1, b"Hello World")
