@@ -1,4 +1,5 @@
 from queue import Queue
+from eros import ErosTransport
 
 # Enum type
 class ChannelType():
@@ -7,11 +8,13 @@ class ChannelType():
     LOOPBACK = 2
 
 pipes = {}
-class PacketSimulator():
+class ErosUDPSim(ErosTransport):
     tx_pipe: Queue
     rx_pipe: Queue
     
-    def __init__(self, name:str, channel_type: ChannelType) -> None:
+    def __init__(self, name:str, channel_type: ChannelType,**kwargs) -> None:
+        super().__init__(**kwargs)
+        
         if not name in pipes:
             pipes[name] = (Queue(), Queue())
 

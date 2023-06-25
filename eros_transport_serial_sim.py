@@ -1,3 +1,4 @@
+from eros import ErosTransport
 from multiprocessing.connection import Connection
 import multiprocessing as mp
 
@@ -7,14 +8,15 @@ class ChannelType():
     PART_B = 1
     LOOPBACK = 2
 
-
 pipes = {}
-class SerialSimulator():
+class ErosSerialSim(ErosTransport):
     
     tx_pipe: mp.connection.PipeConnection
     rx_pipe: mp.connection.PipeConnection
     
-    def __init__(self, name, channel_type: ChannelType) -> None:
+    def __init__(self, name, channel_type: ChannelType,**kwargs) -> None:
+        super().__init__(**kwargs)
+        
         if not name in pipes:
             pipes[name] = mp.Pipe()
 
@@ -27,7 +29,6 @@ class SerialSimulator():
         elif channel_type == ChannelType.LOOPBACK:
             self.tx_pipe = pipes[name][1]
             self.rx_pipe = pipes[name][0]
-        
         
     def read(self):
         return self.rx_pipe.recv()

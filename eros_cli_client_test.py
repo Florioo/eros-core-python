@@ -1,9 +1,9 @@
 
 
-from eros_drv_udp import ErosUDP
+from eros_transport_udp import ErosUDP
 from eros import ErosStream
-from eros_drv_serial import ErosSerial
-from eros_drv_tcp import ErosTCP
+from eros_transport_serial import ErosSerial
+from eros_transport_tcp import ErosTCP
 from eros_cli_client import ErosCommandLineClient
 import time
 from queue import Queue

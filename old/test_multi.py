@@ -1,6 +1,6 @@
 import time
 from eros import ErosStream, ErosPacket
-import stream_simulator
+import eros_transport_serial_sim
 from typing import Union, List
 from queue import Queue
 from enum import Enum
@@ -14,8 +14,8 @@ class channels:
     CHANNEL1 = 1
     CHANNEL2 = 2
     
-eros_host   = ErosStream(stream_simulator.SerialSimulator("test", stream_simulator.ChannelType.PART_A))
-eros_device = ErosStream(stream_simulator.SerialSimulator("test", stream_simulator.ChannelType.PART_B))
+eros_host   = ErosStream(eros_transport_serial_sim.ErosSerialSim("test", eros_transport_serial_sim.ChannelType.PART_A))
+eros_device = ErosStream(eros_transport_serial_sim.ErosSerialSim("test", eros_transport_serial_sim.ChannelType.PART_B))
 
 cli = ErosCommandLineClient(eros_host, channels.CHANNEL2)
 cli_host = ErosCommandLineHost(eros_device, channels.CHANNEL2)

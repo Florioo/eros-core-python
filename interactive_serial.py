@@ -6,7 +6,7 @@ import serial
 from typing import List
 from dataclasses import dataclass
 from serial.tools import list_ports
-from eros_drv_serial import ErosSerial
+from eros_transport_serial import ErosSerial
 from blessed import Terminal
 
 class ErosInteractiveCLI():
@@ -73,9 +73,9 @@ class ErosInteractiveCLI():
 # eros_serial.run()
 
 
-from eros_drv_udp import ErosUDP
+from eros_transport_udp import ErosUDP
 from eros import ErosStream
-from eros_drv_tcp import ErosTCP
+from eros_transport_tcp import ErosTCP
 import time
 eros_serial = ErosStream(ErosTCP("10.250.100.108", 5555))
 print("Connected")

@@ -1,5 +1,5 @@
 import socket
-from eros_drv_udp import ErosUDP
+from eros_transport_udp import ErosUDP
 
 from eros import ErosStream
 import time

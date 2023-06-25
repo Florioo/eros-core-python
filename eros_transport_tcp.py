@@ -1,11 +1,9 @@
-import time
-from eros import ErosStream, ErosPacket
-from typing import List
-from dataclasses import dataclass
+from eros import ErosTransport
 import socket
 
-class ErosTCP():
-    def __init__(self,ip,port) -> None:
+class ErosTCP(ErosTransport):
+    def __init__(self,ip:str, port:int,**kwargs) -> None:
+        super().__init__(**kwargs)
         self.ip = ip
         self.port = port
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)   
