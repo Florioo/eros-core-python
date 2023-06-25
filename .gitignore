@@ -1,1 +1,6 @@
 **.pyc
+/other
+/old
+/.benchmarks
+/.pytest_cache
+/__pycache__

@@ -1,6 +1,9 @@
 
 from eros_transport_serial import ErosSerial
 from eros_transport_loopback import ErosLoopback
+from eros_transport_udp import ErosUDP
+from eros_transport_tcp import ErosTCP
+
 from eros import Eros
 import time
 import logging
@@ -36,8 +39,20 @@ def test_eros_serial_perf(benchmark):
     resp  = RequestResponse(eros, 5)
     benchmark(resp.send, "Hello World")
     
-def test_eros_loopback_perf(benchmark):
-    drv = ErosLoopback(log_level=logging.ERROR)
+def test_eros_udp_perf(benchmark):
+    drv = ErosUDP(ip="10.250.100.108",port=5555,log_level=logging.ERROR)
     eros = Eros(drv, log_level=logging.ERROR)
     resp  = RequestResponse(eros, 5)
     benchmark(resp.send, "Hello World")
+    
+def test_eros_tcp_perf(benchmark):
+    drv = ErosTCP(ip="10.250.100.108",port=6666,log_level=logging.ERROR)
+    eros = Eros(drv, log_level=logging.ERROR)
+    resp  = RequestResponse(eros, 5)
+    benchmark(resp.send, "Hello World")
+
+# def test_eros_loopback_perf(benchmark):
+#     drv = ErosLoopback(log_level=logging.ERROR)
+#     eros = Eros(drv, log_level=logging.ERROR)
+#     resp  = RequestResponse(eros, 5)
+#     benchmark(resp.send, "Hello World")

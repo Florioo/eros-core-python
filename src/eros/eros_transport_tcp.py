@@ -2,6 +2,8 @@ from eros import ErosTransport
 import socket
 
 class ErosTCP(ErosTransport):
+    framing = True
+    verification = True
     def __init__(self,ip:str, port:int,**kwargs) -> None:
         super().__init__(**kwargs)
         self.ip = ip
