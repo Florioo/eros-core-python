@@ -1,4 +1,4 @@
-from eros import ErosTransport
+from .main import ErosTransport
 import socket
 
 class ErosTCP(ErosTransport):

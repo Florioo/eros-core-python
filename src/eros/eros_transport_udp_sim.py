@@ -1,5 +1,5 @@
 from queue import Queue
-from eros import ErosTransport
+from .main import ErosTransport
 
 # Enum type
 class ChannelType():

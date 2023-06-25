@@ -8,5 +8,8 @@
                 }
             }
         ]
-    }
+    },
+    "python.analysis.extraPaths": [
+        "./src"
+    ]
 }

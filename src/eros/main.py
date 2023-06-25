@@ -1,7 +1,6 @@
 from typing import Union, List, Tuple
 import threading
-import time
-from eros_layers import Framing, Verification, RoutingPacketHeader, Routing  # Make sure you import the correct module
+from .eros_layers import Framing, Verification, RoutingPacketHeader, Routing  # Make sure you import the correct module
 import copy
 import logging
 

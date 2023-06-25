@@ -3,4 +3,5 @@
 /old
 /.benchmarks
 /.pytest_cache
-/__pycache__
+**/__pycache__
+**/Eros.egg-info

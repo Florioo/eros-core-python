@@ -1,4 +1,4 @@
-from eros import ErosTransport
+from .main import ErosTransport
 from multiprocessing.connection import Connection
 import multiprocessing as mp
 
