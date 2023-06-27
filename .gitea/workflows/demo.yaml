@@ -5,8 +5,8 @@ jobs:
   build_pytohn_cli:
     runs-on: ubuntu-latest
     
-    container:
-      image: python:3.10
+    # container:
+    #   image: python:3.10
 
     steps:
         # Check-out repositoryd
