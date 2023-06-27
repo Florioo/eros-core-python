@@ -43,4 +43,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: exe
-        path: dist/demo_interactive_serial.exe
+        path: dist/
