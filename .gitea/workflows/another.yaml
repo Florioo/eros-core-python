@@ -12,7 +12,7 @@ jobs:
     
     # Check-out the repository
     - uses: actions/checkout@v3
-    - uses: actions/setup-python@v4 
+    - uses: https://github.com/actions/setup-python@v4 
       with:
         python-version: 'pypy3.9' 
       #   # Setup Python
