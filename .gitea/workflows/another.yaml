@@ -4,7 +4,8 @@ on: [push]
 jobs:
   build_pytohn_cli:
     runs-on: ubuntu-latest
-    
+    container:
+      image: node:14.15.0-alpine3.12
     steps:
     
     # Check-out the repository
