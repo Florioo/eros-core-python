@@ -17,7 +17,8 @@ jobs:
         # cache: 'pip' #
 
         # cache: 'pip' # caching pip dependencies
-
+       env:
+          AGENT_TOOLSDIRECTORY: /opt/hostedtoolcache
     - run: pip install -r requirements.txt
     
     # Compile to file
