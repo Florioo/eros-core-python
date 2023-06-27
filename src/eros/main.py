@@ -104,5 +104,5 @@ class Eros():
             
             route, content = self.routing_layer.unpack(packet)
 
-            if self.channels[route.channel] is not None:
+            if self.channels.get(route.channel) is not None:
                 self.channels[route.channel](content)
