@@ -9,7 +9,7 @@ jobs:
       image: python:3.10
 
     steps:
-        # Check-out repository
+        # Check-out repositoryd
       - uses: actions/checkout@v3
 
 
