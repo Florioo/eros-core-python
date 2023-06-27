@@ -13,7 +13,6 @@ class ErosTerminal():
         self.eros.attach_channel_callback(self.aux_channel, self.receive_aux)
         self.terminal = Terminal()
         
-
     def receive_main(self, data):
         first_byte = data[0]
         
