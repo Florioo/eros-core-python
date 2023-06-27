@@ -5,3 +5,4 @@ cobs==1.2.0
 colorlog==6.7.0
 pyserial==3.5
 pytest==7.4.0
+pyinstaller==5.13.0
