@@ -16,3 +16,8 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+dependencies = [
+    'cobs==1.2.0',
+    'pyserial==3.5',
+    'bitstruct==8.17.0'
+]
