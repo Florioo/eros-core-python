@@ -1,6 +1,6 @@
 from .main import ErosTransport
 import multiprocessing as mp
-import multiprocessing.connection 
+# import multiprocessing.connection 
 # Enum type
 class ChannelType():
     PART_A = 0
@@ -10,8 +10,8 @@ class ChannelType():
 pipes = {}
 class ErosSerialSim(ErosTransport):
     
-    tx_pipe: mp.connection.PipeConnection
-    rx_pipe: mp.connection.PipeConnection
+    # tx_pipe: mp.connection.PipeConnection
+    # rx_pipe: mp.connection.PipeConnection
     
     def __init__(self, name, channel_type: ChannelType,**kwargs) -> None:
         super().__init__(**kwargs)
