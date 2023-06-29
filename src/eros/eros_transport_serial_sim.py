@@ -1,6 +1,6 @@
 from .main import ErosTransport
 import multiprocessing as mp
-
+import mp.connection 
 # Enum type
 class ChannelType():
     PART_A = 0
