@@ -1,8 +1,11 @@
 from typing import Union, List, Tuple
 import threading
 from .eros_layers import Framing, Verification, RoutingPacketHeader, Routing  # Make sure you import the correct module
+from . import eros_layers
+import cobs
 import copy
 import logging
+import time
 
 class ErosTransport():
     framing = True
@@ -25,6 +28,8 @@ class Eros():
     def __init__(self, transport_handle:ErosTransport,log_level = logging.INFO) -> None:
         self.transport_handle = transport_handle
         self.channels = {}
+        self.discart_buffer = b""
+        
         self.log = logging.getLogger("Eros")
         self.log.setLevel(log_level)
         
@@ -38,9 +43,9 @@ class Eros():
         self.routing_layer = Routing()
             
         # Start receive thread
-        thread_handle = threading.Thread(target=self.receive_thread, daemon=True)
-        thread_handle.start()
-           
+        self.thread_handle = threading.Thread(target=self.receive_thread, daemon=True)
+        self.thread_handle.start()
+        
     def attach_channel_callback(self, channel:int, callback: callable) -> None:
         """Attach a callback to a channel
         
@@ -81,28 +86,56 @@ class Eros():
         """Receive thread, will call the channel callbacks with the data, 1 thread per Eros instance
         """
         while True:
-            try:
-                self.receive_packets()  
-                
-            except Exception as e:
-                # Todo add better error handling
-                print("error:" + str(e))
+            self.receive_packets()  
+         
+            # except Exception as e:
+            #     # Todo add better error handling
+            #     print("error:" + str(e))
 
     def receive_packets(self) -> None:    
         # Call must be blocking
-        data = self.transport_handle.read()
-        
-        if self.framing_layer is not None:
-            packets = self.framing_layer.unpack(data)
-        else:
-            packets = [data]
-    
-        for packet in packets:
-
-            if self.verification_layer is not None:
-                packet = self.verification_layer.unpack( packet)
+        try:
+            data = self.transport_handle.read()
             
-            route, content = self.routing_layer.unpack(packet)
+            if self.framing_layer is not None:
+                packets = self.framing_layer.unpack(data)
+            else:
+                packets = [data]
+        
+            for packet in packets:
 
-            if self.channels.get(route.channel) is not None:
-                self.channels[route.channel](content)
+                if self.verification_layer is not None:
+                    packet = self.verification_layer.unpack( packet)
+                
+                route, content = self.routing_layer.unpack(packet)
+
+                if self.channels.get(route.channel) is not None:
+                    self.channels[route.channel](content)
+                    
+        except eros_layers.CRCException:
+            self.discart_buffer += data
+
+        except cobs.cobs.DecodeError:
+            self.discart_buffer += data
+    
+    def log_exceptions(self) -> None:    
+        
+        if len(self.discart_buffer) == 0:
+            return
+         
+        self.log.warning(f"{len(self.discart_buffer)} bytes were discarded due to Encoding/Decoding errors")
+        self.log.warning(f"last 64 bytes of Discarded data:\n{self.discart_buffer[-100:]}")
+        self.discart_buffer = b""
+         
+    
+    def spin(self, log_exceptions=False):
+        
+        while True:
+
+            if log_exceptions:
+                self.log_exceptions()
+
+            if not self.thread_handle.is_alive():
+                return
+            
+            time.sleep(1)

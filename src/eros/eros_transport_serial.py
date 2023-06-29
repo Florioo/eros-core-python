@@ -4,6 +4,8 @@ from typing import List
 from dataclasses import dataclass
 from serial.tools import list_ports
 
+VID = 4292 #ESP32 UART VID
+
 class ErosSerial(ErosTransport):
     framing = True
     verification = True
@@ -19,19 +21,22 @@ class ErosSerial(ErosTransport):
         serial_number: str
         
         
-    def __init__(self, port=None,**kwargs) -> None:
+    def __init__(self, port=None,baudrate=None,vid=VID,**kwargs) -> None:
         super().__init__(**kwargs)
         
         # Autodetect port if not specified
-        if port is None:
-            ports = ErosSerial.get_serial_ports(vid=4292)
+        if port is None or port == "auto":
+            ports = ErosSerial.get_serial_ports(vid=vid)
             if len(ports) == 0:
-                raise Exception("No serial ports found")
+                raise IOError("No serial ports found")
             port = ports[0].port
-
+            
+        if baudrate is None:
+            baudrate = 2000000
+            
         # Open serial port
         self.serial_handle = serial.Serial(port,
-                                           baudrate=1152000,
+                                           baudrate=baudrate,
                                            timeout=None,
                                            write_timeout=1,
                                            rtscts=False,
@@ -42,6 +47,7 @@ class ErosSerial(ErosTransport):
         self.serial_handle.set_buffer_size(rx_size = 1024*1024,
                                            tx_size = 1024*1024)
         self.log.debug(f"Opened serial port: {port}")
+        
     def read(self) -> bytes:
         """Read data from the serial port
 
@@ -54,6 +60,7 @@ class ErosSerial(ErosTransport):
             data = self.serial_handle.read(1)
         self.log.debug(f"Received: {data}")
         return data
+    
     def write(self, data:bytes):
         """Write data to the serial port
 

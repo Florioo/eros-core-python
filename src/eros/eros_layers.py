@@ -3,6 +3,12 @@ from typing import List, Tuple
 import bitstruct
 from dataclasses import dataclass
 
+class CRCException(Exception):
+    pass
+
+class COBSException(Exception):
+    pass
+
 class Framing():
     def __init__(self):
         """Framing layer for the eros system
@@ -51,17 +57,8 @@ class Verification():
     """Verification layer for the eros system
     """
     def __init__(self) -> None:
-        
-        # config = crc.Configuration(
-        #     width=16,
-        #     polynomial=0x07,
-        #     init_value=0x00,
-        #     final_xor_value=0x00,
-        #     reverse_input=False,
-        #     reverse_output=False,
-        # )
-        # self.crc16 = crc.Calculator(config)
         pass
+    
     def crc16(self, data):
         crc = 0xFFFF
         polynomial = 0x8005
@@ -110,7 +107,7 @@ class Verification():
             is_valid = False
         
         if not is_valid:
-            raise ValueError("Invalid CRC")
+            raise CRCException(f"CRC is invalid: {self.crc16(data)}")
             
         # Return data without CRC
         return data[:-2]
