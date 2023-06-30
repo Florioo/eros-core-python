@@ -4,3 +4,4 @@ from .eros_transport_serial import ErosSerial
 from .eros_transport_loopback import ErosLoopback
 from .eros_transport_udp import ErosUDP
 from .eros_transport_tcp import ErosTCP
+from .eros_transport_zmq import ErosZMQ

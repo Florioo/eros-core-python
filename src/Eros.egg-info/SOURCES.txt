@@ -15,6 +15,7 @@ src/eros/eros_transport_serial_sim.py
 src/eros/eros_transport_tcp.py
 src/eros/eros_transport_udp.py
 src/eros/eros_transport_udp_sim.py
+src/eros/eros_transport_zmq.py
 src/eros/main.py
 tests/test_eros.py
 tests/test_eros_layers.py
