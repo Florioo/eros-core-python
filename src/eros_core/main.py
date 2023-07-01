@@ -1,4 +1,4 @@
-from typing import Union, List, Tuple
+from typing import Union, List, Tuple, Dict
 import threading
 from .eros_layers import Framing, Verification, RoutingPacketHeader, Routing  # Make sure you import the correct module
 from . import eros_layers
@@ -7,71 +7,13 @@ import copy
 import logging
 import time
 from dataclasses import dataclass, field
+from .eros_analytics import ErosStreamAnalytics
+from .transport.drv_generic import ErosTransport,TransportStates
 
-
-class ErosTransport():
-    framing = True
-    verification = True
-    
-    def __init__(self,log_level = logging.INFO):
-        self.log = logging.getLogger(__name__)
-        self.log.setLevel(log_level)
-        
-    def write(self, data: bytes) -> None:
-        pass
-    
-    def read(self) -> bytes:
-        pass
-
-ALPHA = 0.9
-@dataclass
-class ErosStreamAnalytics():
-    prev_bytes = 0
-    total_bytes = 0
-    last_flush_time = time.time()
-    last_delta = 0
-    deltas: list[float] = field(default_factory=list)
-    
-    def register_data(self,size_bytes):
-        self.total_bytes += size_bytes
-
-    def get_rate(self):
-        """ Get the rate of the channel in bytes per second
-
-        Returns:
-            float: Rate in bits per second
-        """
-        if time.time() - self.last_flush_time < 0.5:
-            return self.last_delta
-            
-        delta = (self.total_bytes - self.prev_bytes)/(time.time() - self.last_flush_time)
-        
-        self.deltas.append(delta)
-        if len(self.deltas) > 10:
-            self.deltas.pop(0)
-         
-        self.prev_bytes = self.total_bytes
-        self.last_flush_time = time.time()
-        
-         
-        
-        # self.last_delta = ALPHA*delta + (1-ALPHA)*self.last_delta 
-        self.last_delta = sum(self.deltas)/len(self.deltas)
-
-        return self.last_delta
-    
-    def get_total(self):
-        """ Get the total number of bytes received
-
-        Returns:
-            _type_: _description_
-        """
-        return self.total_bytes
-    
-        
 class Eros():
     framing_layer = None
     verification_layer = None
+    kill_receive_thread = False
     
     def __init__(self, transport_handle:ErosTransport,log_level = logging.INFO) -> None:
         self.transport_handle = transport_handle
@@ -111,7 +53,7 @@ class Eros():
         """
         self.log.info(f"Attaching callback to channel {channel}, callback: {callback}")
         self.channels[channel] = callback
-        
+
     def attach_catch_callback(self, callback: callable) -> None:
         """Attach a callback to a channel
         
@@ -164,12 +106,24 @@ class Eros():
         """Receive thread, will call the channel callbacks with the data, 1 thread per Eros instance
         """
         while True:
+            if self.kill_receive_thread:
+                return
             self.receive_packets()  
 
     def receive_packets(self) -> None:    
         # Call must be blocking
         try:
+
             data = self.transport_handle.read()
+            
+            if self.transport_handle.get_state() == TransportStates.DEAD:
+                self.log.error("Transport layer is dead, killing receive thread")
+                self.kill_receive_thread = True
+                return
+            
+            if data is None:
+                self.log.debug("Received None from transport layer")
+                return
             
             if self.framing_layer is not None:
                 packets = self.framing_layer.unpack(data)
@@ -231,3 +185,15 @@ class Eros():
                 return
             
             time.sleep(1)
+    
+    def get_state(self) -> TransportStates:
+        return self.transport_handle.get_state()
+    
+    def close(self):
+        # Close the transport layer
+        self.log.info("Closing Eros transport layer")
+        self.transport_handle.close()
+    
+    def wait_for_state(self, state:TransportStates, timeout=2) -> bool:
+        return self.transport_handle.wait_for_state(state, timeout)
+        

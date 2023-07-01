@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
-Name: Eros-core
-Version: 0.5.1
+Name: eros-core
+Version: 0.8.0
 Summary: EROS-core Package
 Author-email: Floris Vernieuwe <floris@vernieuwe.eu>
 Classifier: Programming Language :: Python :: 3

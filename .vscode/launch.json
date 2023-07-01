@@ -11,6 +11,15 @@
             "program": "main.py",
             "console": "integratedTerminal",
             "justMyCode": true
+        },
+        
+        {
+            "name": "Python: test",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/tests/etest_drv_tcp.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
         }
     ]
 }

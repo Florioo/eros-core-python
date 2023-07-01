@@ -3,8 +3,8 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "Eros-core"
-version = "0.5.1"
+name = "eros_core"
+version = "0.8.0"
 authors = [
   { name="Floris Vernieuwe", email="floris@vernieuwe.eu" },
 ]
