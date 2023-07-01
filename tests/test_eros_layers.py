@@ -3,7 +3,7 @@ from cobs import cobs
 import bitstruct
 from dataclasses import dataclass
 import random
-from eros_layers import Framing, Verification, RoutingPacketHeader, Routing  # Make sure you import the correct module
+from eros_core.eros_layers import Framing, Verification, RoutingPacketHeader, Routing ,CRCException # Make sure you import the correct module
 
 def generate_random_data(length: int) -> bytes:
     return bytes([random.randint(0, 255) for _ in range(length)])
@@ -34,7 +34,7 @@ def test_verification():
         pytest.fail("Unexpected ValueError ..")
 
     # Incorrect CRC case
-    with pytest.raises(ValueError):
+    with pytest.raises(CRCException):
         # Change the first byte of the encoded data to something else, guaranteed to be wrong
         encoded_data = encoded_data[1:]
         verification.unpack(encoded_data+b'\x00')  # Add unexpected data
@@ -70,3 +70,9 @@ def test_routing():
     # Unpack with invalid data
     with pytest.raises(Exception):  # Expect exception due to invalid data length
         routing.unpack(b'')
+        
+        
+if __name__ == "__main__":
+    test_framing()
+    test_verification()
+    test_routing()

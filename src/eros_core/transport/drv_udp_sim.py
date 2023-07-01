@@ -1,6 +1,5 @@
+from .drv_generic import ErosTransport
 from queue import Queue
-from .main import ErosTransport
-
 # Enum type
 class ChannelType():
     PART_A = 0

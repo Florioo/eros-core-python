@@ -1,4 +1,4 @@
-from .main import ErosTransport
+from .drv_generic import ErosTransport
 from queue import Queue
 
 class ErosLoopback(ErosTransport):

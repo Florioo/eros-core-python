@@ -1,5 +1,5 @@
 import zmq
-from .main import ErosTransport
+from .drv_generic import ErosTransport
 from typing import List
 
 

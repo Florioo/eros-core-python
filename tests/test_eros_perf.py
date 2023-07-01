@@ -1,13 +1,9 @@
 
-from eros_transport_serial import ErosSerial
-from eros_transport_loopback import ErosLoopback
-from eros_transport_udp import ErosUDP
-from eros_transport_tcp import ErosTCP
-
-from eros import Eros
+from eros_core import Eros, ErosSerial, ErosLoopback,ErosUDP ,ErosTCP
 import time
 import logging
 from queue import Queue
+
 # Setup logging
 logging.basicConfig(level=logging.DEBUG)
 import pytest

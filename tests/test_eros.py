@@ -1,6 +1,5 @@
 
-from eros_transport_loopback import ErosLoopback
-from eros import Eros
+from eros_core import Eros, ErosLoopback
 import time
 import logging
 
@@ -20,8 +19,11 @@ def test_eros_simple():
     eros.attach_channel_callback(1, callback1)
     eros.attach_channel_callback(15, lambda x: print("Callback 2 called"))
     eros.transmit_packet(1, "Hello World")
-    eros.transmit_packet(15, "Another string")
+    eros.transmit_packet(15, "Another string on another channel")
     
     time.sleep(0.1)
     
     assert received[0] == b"Hello World"
+
+if __name__ == "__main__":
+    test_eros_simple()

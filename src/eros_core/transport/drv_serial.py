@@ -1,5 +1,5 @@
 import serial    
-from .main import ErosTransport
+from .drv_generic import ErosTransport
 from typing import List
 from dataclasses import dataclass
 from serial.tools import list_ports

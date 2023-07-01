@@ -1,4 +1,4 @@
-from .main import ErosTransport
+from .drv_generic import ErosTransport
 import multiprocessing as mp
 # import multiprocessing.connection 
 # Enum type
