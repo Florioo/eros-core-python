@@ -19,5 +19,6 @@ classifiers = [
 dependencies = [
     'cobs==1.2.0',
     'pyserial==3.5',
-    'bitstruct==8.17.0'
+    'bitstruct==8.17.0',
+    'pyzmq==25.1.0'
 ]
