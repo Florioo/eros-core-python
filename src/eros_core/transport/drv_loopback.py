@@ -1,4 +1,4 @@
-from .drv_generic import ErosTransport
+from .drv_generic import ErosTransport, TransportStates
 from queue import Queue
 
 class ErosLoopback(ErosTransport):
@@ -8,6 +8,7 @@ class ErosLoopback(ErosTransport):
     def __init__(self,**kwargs):
         super().__init__(**kwargs)
         self.queue = Queue()
+        self.state = TransportStates.CONNECTED
         
     def write(self, data: bytes) -> None:
         self.log.debug(f"Transmitting: {data}")

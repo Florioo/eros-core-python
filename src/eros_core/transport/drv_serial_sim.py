@@ -1,4 +1,4 @@
-from .drv_generic import ErosTransport
+from .drv_generic import ErosTransport, TransportStates
 import multiprocessing as mp
 # import multiprocessing.connection 
 # Enum type
@@ -15,7 +15,7 @@ class ErosSerialSim(ErosTransport):
     
     def __init__(self, name, channel_type: ChannelType,**kwargs) -> None:
         super().__init__(**kwargs)
-        
+        self.state = TransportStates.CONNECTED
         if not name in pipes:
             pipes[name] = mp.Pipe()
 
@@ -34,4 +34,5 @@ class ErosSerialSim(ErosTransport):
     
     def write(self, data):
         self.tx_pipe.send(data)
-         
+    
+   

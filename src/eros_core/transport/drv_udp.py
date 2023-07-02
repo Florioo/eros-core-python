@@ -1,4 +1,4 @@
-from .drv_generic import ErosTransport
+from .drv_generic import ErosTransport, TransportStates
 import socket
 import time
 
@@ -12,7 +12,8 @@ class ErosUDP(ErosTransport):
         self.port = port
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)   
         self.sock.bind(("0.0.0.0", self.port))  
-
+        self.state = TransportStates.CONNECTED
+        
     def read(self) -> bytes:
         
         self.log.debug(f"Listening on {self.ip}:{self.port}")

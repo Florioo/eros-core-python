@@ -46,3 +46,6 @@ class ErosTransport():
             callback (callable): Callback
         """
         self.status_callback = callback
+        
+    def close(self):
+        pass     

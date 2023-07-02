@@ -1,4 +1,4 @@
-from .drv_generic import ErosTransport
+from .drv_generic import ErosTransport, TransportStates
 from queue import Queue
 # Enum type
 class ChannelType():
@@ -13,6 +13,7 @@ class ErosUDPSim(ErosTransport):
     
     def __init__(self, name:str, channel_type: ChannelType,**kwargs) -> None:
         super().__init__(**kwargs)
+        self.state = TransportStates.CONNECTED
         
         if not name in pipes:
             pipes[name] = (Queue(), Queue())

@@ -1,5 +1,5 @@
 import zmq
-from .drv_generic import ErosTransport
+from .drv_generic import ErosTransport, TransportStates
 from typing import List
 
 
@@ -12,7 +12,8 @@ class ErosZMQ(ErosTransport):
     def __init__(self, port=None,**kwargs) -> None:
         super().__init__(**kwargs)
 
-            
+        self.state = TransportStates.CONNECTED
+        
         self.context = zmq.Context()
         self.sub_socket = self.context.socket(zmq.SUB)
         self.sub_socket.connect(f'tcp://127.0.0.1:{port}')
