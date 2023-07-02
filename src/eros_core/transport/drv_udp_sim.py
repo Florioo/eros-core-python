@@ -1,7 +1,7 @@
 from .drv_generic import ErosTransport, TransportStates
 from queue import Queue
 # Enum type
-class ChannelType():
+class ResponseType():
     PART_A = 0
     PART_B = 1
     LOOPBACK = 2
@@ -11,20 +11,20 @@ class ErosUDPSim(ErosTransport):
     tx_pipe: Queue
     rx_pipe: Queue
     
-    def __init__(self, name:str, channel_type: ChannelType,**kwargs) -> None:
+    def __init__(self, name:str, channel_type: ResponseType,**kwargs) -> None:
         super().__init__(**kwargs)
         self.state = TransportStates.CONNECTED
         
         if not name in pipes:
             pipes[name] = (Queue(), Queue())
 
-        if channel_type == ChannelType.PART_A:
+        if channel_type == ResponseType.PART_A:
             self.tx_pipe = pipes[name][0]
             self.rx_pipe = pipes[name][1]
-        elif channel_type == ChannelType.PART_B:
+        elif channel_type == ResponseType.PART_B:
             self.tx_pipe = pipes[name][1]
             self.rx_pipe = pipes[name][0]
-        elif channel_type == ChannelType.LOOPBACK:
+        elif channel_type == ResponseType.LOOPBACK:
             self.tx_pipe = pipes[name][0]
             self.rx_pipe = pipes[name][0]
         

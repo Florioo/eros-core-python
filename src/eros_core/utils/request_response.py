@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Callable
 
-class ChannelType(Enum):
+class ResponseType(Enum):
     DATA = 0
     ACK = 1
     NACK = 2
@@ -15,7 +15,7 @@ class ChannelType(Enum):
 
 @dataclass
 class CommandFrame():
-    resp_type: ChannelType
+    resp_type: ResponseType
     data: bytes
     
     def pack(self) -> bytes:
@@ -23,7 +23,7 @@ class CommandFrame():
 
     @staticmethod
     def unpack( data: bytes):
-        return CommandFrame(ChannelType(data[0]), data[1:])
+        return CommandFrame(ResponseType(data[0]), data[1:])
     
     def __repr__(self) -> str:
         return __str__(self)
@@ -60,7 +60,7 @@ class CLIResponse():
         self.received_data = self.received_data + frame.data
 
         # If the packet is not a data packet, the packed is finished
-        if frame.resp_type == ChannelType.DATA:
+        if frame.resp_type == ResponseType.DATA:
             return
         # Create the full frame
         full_frame = CommandFrame(frame.resp_type, self.received_data)
@@ -89,7 +89,7 @@ class CLIResponse():
         try:
             return self.receive_packets_queue.get(timeout=timeout)
         except Exception as e:
-            return CommandFrame(ChannelType.TIMEOUT, b"")
+            return CommandFrame(ResponseType.TIMEOUT, b"")
     
     def send(self, data: str) -> CommandFrame:
         """ Send data and wait for response

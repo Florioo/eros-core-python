@@ -6,4 +6,4 @@ from .transport.drv_udp import ErosUDP
 from .transport.drv_tcp import ErosTCP
 from .transport.drv_zmq import ErosZMQ
 from .transport.drv_generic import TransportStates
-from .utils.request_response import CLIResponse,ChannelType,CommandFrame
+from .utils.request_response import CLIResponse,ResponseType,CommandFrame
