@@ -49,9 +49,18 @@ class Framing():
         # Add the last chunk to the buffer, because it may be incomplete
         self.receive_buffer = packets.pop()
         
-        packets = [cobs.decode(packet) for packet in packets]
-
-        return packets
+        # If one of the packets fails to decode, just return the raw data
+        outgoing_packets = []
+        for packet in packets:
+            try:
+                outgoing_packets.append(cobs.decode(packet))
+            except cobs.DecodeError:
+                outgoing_packets.append(packet)
+                
+        # Remove empty packets
+        outgoing_packets = [packet for packet in outgoing_packets if packet != b'']
+        
+        return outgoing_packets
 
 class Verification():
     """Verification layer for the eros system

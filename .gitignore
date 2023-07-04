@@ -6,3 +6,4 @@
 **/__pycache__
 **/Eros.egg-info
 /build
+**egg-info/**

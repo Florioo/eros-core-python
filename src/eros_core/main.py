@@ -9,7 +9,7 @@ import time
 from dataclasses import dataclass, field
 from .eros_analytics import ErosStreamAnalytics
 from .transport.drv_generic import ErosTransport,TransportStates
-
+import copy
 class Eros():
     framing_layer = None
     verification_layer = None
@@ -20,6 +20,7 @@ class Eros():
         self.channels = {}
         self.raw_callback = None
         self.catch_callback = None
+        self.fail_callback = None
         
         self.analytics: Dict[int, Tuple[ErosStreamAnalytics,ErosStreamAnalytics]] = {}
         self.analytics[-1] = (ErosStreamAnalytics(),ErosStreamAnalytics())
@@ -65,6 +66,18 @@ class Eros():
         """
         self.log.info(f"Attaching catch callback, callback: {callback}")
         self.catch_callback = callback
+        
+    def attach_fail_callback(self, callback: callable) -> None:
+        """Attach a callback to a channel
+        
+        If a callback is already attached to the channel it will be overwritten
+           
+        Args:
+            channel (int): Channel number
+            callback (callable): Callback function
+        """
+        self.log.info(f"Attaching fail callback, callback: {callback}")
+        self.fail_callback = callback
         
     def attach_raw_callback(self, callback: callable) -> None:
         self.log.info(f"Attaching raw callback, callback: {callback}")
@@ -112,26 +125,28 @@ class Eros():
 
     def receive_packets(self) -> None:    
         # Call must be blocking
-        try:
 
-            data = self.transport_handle.read()
-            
-            if self.transport_handle.get_state() == TransportStates.DEAD:
-                self.log.error("Transport layer is dead, killing receive thread")
-                self.kill_receive_thread = True
-                return
-            
-            if data is None:
-                self.log.debug("Received None from transport layer")
-                return
-            
-            if self.framing_layer is not None:
-                packets = self.framing_layer.unpack(data)
-            else:
-                packets = [data]
+        raw_data = self.transport_handle.read()
         
-            for unverified_packet in packets:
-
+        if self.transport_handle.get_state() == TransportStates.DEAD:
+            self.log.error("Transport layer is dead, killing receive thread")
+            self.kill_receive_thread = True
+            return
+        
+        if raw_data is None:
+            self.log.debug("Received None from transport layer")
+            return
+        
+        data = copy.copy(raw_data)
+        
+        if self.framing_layer is not None:
+            packets = self.framing_layer.unpack(data)
+        else:
+            packets = [data]
+    
+        for unverified_packet in packets:
+            try:
+                
                 if self.verification_layer is not None:
                     verified_packet = self.verification_layer.unpack( unverified_packet)
                 else:
@@ -155,13 +170,23 @@ class Eros():
                 elif self.catch_callback is not None:
                     self.catch_callback(route.channel, content)
                     
-        except eros_layers.CRCException:
-            self.discart_buffer += data
-            self.analytics[-1][0].register_data(len(data))
+            except eros_layers.CRCException:
+                
+                if self.fail_callback is not None:
+                    self.fail_callback(unverified_packet)
+                
+                self.discart_buffer += unverified_packet
+                self.analytics[-1][0].register_data(len(unverified_packet))
 
-        except cobs.cobs.DecodeError:
-            self.discart_buffer += data
-            self.analytics[-1][0].register_data(len(data))
+            except cobs.cobs.DecodeError:
+                
+                if self.fail_callback is not None:
+                    self.fail_callback(unverified_packet)
+                    
+                self.discart_buffer += unverified_packet
+                self.analytics[-1][0].register_data(len(unverified_packet))
+
+                        
 
             
     def log_exceptions(self) -> None:    
