@@ -38,6 +38,8 @@ def test_eros_tcp_open_close(log):
         assert(eros.wait_for_state(TransportStates.DEAD, 2))
         assert(drv.get_state() == TransportStates.DEAD)
 
+
+
 def test_ros_tcp_troughput(log):
     for u in range(3):
         # setup_logging()
