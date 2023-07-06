@@ -96,8 +96,8 @@ class ErosSerial(ErosTransport):
                                             xonxoff=True)
             
             # Increase buffer size
-            self.serial_handle.set_buffer_size(rx_size = 1024*1024,
-                                            tx_size = 1024*1024)   
+            # self.serial_handle.set_buffer_size(rx_size = 1024*1024,
+            #                                 tx_size = 1024*1024)   
                         
         except Exception as e:
             self.log.error(f"Failed to connect: {e}")
