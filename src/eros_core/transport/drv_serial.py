@@ -4,7 +4,7 @@ from typing import List
 from dataclasses import dataclass
 from serial.tools import list_ports
 import time
-
+import sys
 VID = 4292 #ESP32 UART VID
 
 class ErosSerial(ErosTransport):
@@ -95,9 +95,14 @@ class ErosSerial(ErosTransport):
                                             dsrdtr=True,
                                             xonxoff=True)
             
-            # Increase buffer size
-            # self.serial_handle.set_buffer_size(rx_size = 1024*1024,
-            #                                 tx_size = 1024*1024)   
+            # Increase buffer size if in windows
+            if sys.platform == "win32":
+                self.serial_handle.set_buffer_size(rx_size = 1024*1024,
+                                                   tx_size = 1024*1024)   
+            else:
+                #TODO: Find a way to increase buffer size in linux
+                pass
+    
                         
         except Exception as e:
             self.log.error(f"Failed to connect: {e}")
