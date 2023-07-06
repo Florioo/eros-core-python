@@ -1,24 +1,37 @@
 [build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
 
 [project]
 name = "eros_core"
-version = "0.8.0"
 authors = [
-  { name="Floris Vernieuwe", email="floris@vernieuwe.eu" },
+    {name = "Floris Vernieuwe", email = "floris@vernieuwe.eu"},
 ]
 description = "EROS-core Package"
+
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.10"
+
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+
+
 dependencies = [
     'cobs==1.2.0',
     'pyserial==3.5',
     'bitstruct==8.17.0',
     'pyzmq==25.1.0'
 ]
+
+dynamic = ["version"]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.version]
+source = "vcs"
+
+[project.scripts]
+eros = "eros_cli:cli"
