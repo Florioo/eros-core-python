@@ -92,8 +92,8 @@ class ErosSerial(ErosTransport):
                                             timeout=None,
                                             write_timeout=1,
                                             rtscts=False,
-                                            dsrdtr=True,
-                                            xonxoff=True)
+                                            dsrdtr=False,
+                                            xonxoff=False)
             
             # Increase buffer size if in windows
             if sys.platform == "win32":
