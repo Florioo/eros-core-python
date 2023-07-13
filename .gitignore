@@ -7,3 +7,4 @@
 **/Eros.egg-info
 /build
 **egg-info/**
+/dist
