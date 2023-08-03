@@ -112,8 +112,7 @@ class Eros():
             self.analytics[channel] = (ErosStreamAnalytics(),ErosStreamAnalytics())
         self.analytics[channel][1].register_data(len(data))
         
-        return data 
-        # self.transport_handle.write(data)
+        self.transport_handle.write(data)
         
     
     def receive_thread(self) -> None:
