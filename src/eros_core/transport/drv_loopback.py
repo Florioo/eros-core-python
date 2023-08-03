@@ -7,7 +7,7 @@ class ErosLoopback(ErosTransport):
     
     def __init__(self,**kwargs):
         super().__init__(**kwargs)
-        self.queue = Queue()
+        self.queue = Queue(maxsize=1000)
         self.state = TransportStates.CONNECTED
         
     def write(self, data: bytes) -> None:
