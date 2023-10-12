@@ -90,7 +90,7 @@ class ErosSerial(ErosTransport):
             self.serial_handle = serial.Serial(self.port,
                                             baudrate=self.baudrate,
                                             timeout=None,
-                                            write_timeout=1,
+                                            write_timeout=0,
                                             rtscts=False,
                                             dsrdtr=False,
                                             xonxoff=False)
