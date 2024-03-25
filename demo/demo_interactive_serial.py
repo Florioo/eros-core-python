@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from eros import Eros, ErosSerial,ErosTCP,ErosTerminal
 print("ok")
 
 

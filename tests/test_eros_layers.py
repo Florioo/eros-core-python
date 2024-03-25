@@ -1,19 +1,23 @@
 import pytest
-from cobs import cobs
-import bitstruct
-from dataclasses import dataclass
 import random
-from eros_core.eros_layers import Framing, Verification, RoutingPacketHeader, Routing ,CRCException # Make sure you import the correct module
+from eros_core.eros_layers import (
+    Framing,
+    Verification,
+    Routing,
+    CRCException,
+)  # Make sure you import the correct module
+
 
 def generate_random_data(length: int) -> bytes:
     return bytes([random.randint(0, 255) for _ in range(length)])
+
 
 def test_framing():
     framing = Framing()
     test_data = generate_random_data(16)
     encoded_data = framing.pack(test_data)
     assert isinstance(encoded_data, bytes)
-    unpacked_data = framing.unpack(encoded_data+encoded_data)  # Add null termination
+    unpacked_data = framing.unpack(encoded_data + encoded_data)  # Add null termination
     assert isinstance(unpacked_data, list)
     assert len(unpacked_data) == 2
     assert unpacked_data[0] == test_data
@@ -25,7 +29,7 @@ def test_verification():
     test_data = generate_random_data(16)
     encoded_data = verification.pack(test_data)
     assert isinstance(encoded_data, bytes)
-    
+
     # Correct CRC case
     try:
         decoded_data = verification.unpack(encoded_data)
@@ -37,16 +41,20 @@ def test_verification():
     with pytest.raises(CRCException):
         # Change the first byte of the encoded data to something else, guaranteed to be wrong
         encoded_data = encoded_data[1:]
-        verification.unpack(encoded_data+b'\x00')  # Add unexpected data
+        verification.unpack(encoded_data + b"\x00")  # Add unexpected data
 
 
 def test_routing():
     routing = Routing()
 
     # Valid cases
-    for channel in range(16):  # As the channel is 4 bits it should accept values from 0 to 15
+    for channel in range(
+        16
+    ):  # As the channel is 4 bits it should accept values from 0 to 15
         for req_resp in [True, False]:
-            for version in range(4):  # As the version is 2 bits it should accept values from 0 to 3
+            for version in range(
+                4
+            ):  # As the version is 2 bits it should accept values from 0 to 3
                 test_data = generate_random_data(16)
                 packed_data = routing.pack(test_data, version, channel, req_resp)
                 assert isinstance(packed_data, bytes)
@@ -69,9 +77,9 @@ def test_routing():
 
     # Unpack with invalid data
     with pytest.raises(Exception):  # Expect exception due to invalid data length
-        routing.unpack(b'')
-        
-        
+        routing.unpack(b"")
+
+
 if __name__ == "__main__":
     test_framing()
     test_verification()
