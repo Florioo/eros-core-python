@@ -1,37 +1,24 @@
-[build-system]
-requires = ["hatchling", "hatch-vcs"]
-build-backend = "hatchling.build"
-
-[project]
+[tool.poetry]
 name = "eros_core"
-authors = [
-    {name = "Floris Vernieuwe", email = "floris@vernieuwe.eu"},
-]
-description = "EROS-core Package"
-
+version = "0.1.0"
+description = ""
+authors = ["floris vernieuwe <floris@vernieuwe.eu>"]
 readme = "readme.md"
-requires-python = ">=3.9"
 
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "Operating System :: OS Independent",
-]
+[tool.poetry.dependencies]
+python = "^3.10"
+cobs = "1.2.0"
+pyserial = "3.5"
+bitstruct = "8.17.0"
+pyzmq = "25.1.0"
 
 
-dependencies = [
-    'cobs==1.2.0',
-    'pyserial==3.5',
-    'bitstruct==8.17.0',
-    'pyzmq==25.1.0'
-]
+[build-system]
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
+build-backend = "poetry_dynamic_versioning.backend"
 
-dynamic = ["version"]
+[tool.poetry-dynamic-versioning]
+enable = true
 
-[tool.hatch.metadata]
-allow-direct-references = true
-
-[tool.hatch.version]
-source = "vcs"
-
-[project.scripts]
+[tool.poetry.scripts]
 eros = "eros_cli:cli"
