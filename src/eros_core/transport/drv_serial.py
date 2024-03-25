@@ -87,16 +87,14 @@ class ErosSerial(ErosTransport):
     def connect(self) -> bool:
         try:
             # Open serial port
-            self.serial_handle = serial.Serial(
-                self.port,
-                baudrate=self.baudrate,
-                timeout=None,
-                write_timeout=1,
-                rtscts=False,
-                dsrdtr=False,
-                xonxoff=False,
-            )
-
+            self.serial_handle = serial.Serial(self.port,
+                                            baudrate=self.baudrate,
+                                            timeout=None,
+                                            write_timeout=0,
+                                            rtscts=False,
+                                            dsrdtr=False,
+                                            xonxoff=False)
+            
             # Increase buffer size if in windows
             if sys.platform == "win32":
                 self.serial_handle.set_buffer_size(
